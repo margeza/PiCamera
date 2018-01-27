@@ -1,0 +1,24 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.marta.rpicamera.MainActivity">
+
+    <item
+        android:id="@+id/action_saved_items"
+        android:icon="@drawable/ic_playlist_play_white_24dp"
+        android:title="@string/action_saved_items"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_about"
+        android:icon="@drawable/ic_info_white_24dp"
+        android:title="@string/action_about"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/ic_settings_white_24dp"
+        android:title="@string/action_settings"
+        app:showAsAction="always" />
+
+</menu>
