@@ -29,9 +29,13 @@
             android:name=".Activities.AboutActivity"
             android:label="@string/action_about"
             android:parentActivityName=".MainActivity" />
-        <activity android:name=".Activities.SavedItemsActivity"
+        <activity
+            android:name=".Activities.SavedItemsActivity"
             android:label="@string/action_saved_items"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".Activities.GalleryActivity"
+            android:parentActivityName=".Activities.SavedItemsActivity"/>
     </application>
 
 </manifest>

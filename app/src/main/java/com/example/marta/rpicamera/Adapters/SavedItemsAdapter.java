@@ -19,8 +19,8 @@ import java.util.ArrayList;
 
 public class SavedItemsAdapter extends ArrayAdapter<SavedItem> {
 
-    public SavedItemsAdapter(Activity context, ArrayList<SavedItem> androidFlavors) {
-        super(context, 0, androidFlavors);
+    public SavedItemsAdapter(Activity context, ArrayList<SavedItem> savedItems) {
+        super(context, 0, savedItems);
     }
 
     @Override

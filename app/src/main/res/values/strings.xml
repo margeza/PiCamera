@@ -11,7 +11,7 @@
     <string name="user_name_txt"></string>
     <string name="password_txt"></string>
     <string name="password">Password</string>
-    <string name="camera_URL">rtsp://184.72.239.149/vod/mp4:BigBuckBunny_175k.mov</string>
+    <string name="camera_URL">http://89.78.145.193/html/cam_pic_new.php?time=1517771864407&amp;pDelay=40000</string>
     <string name="enter_ip">Enter IP</string>
     <string name="enter_password">Enter password</string>
     <string name="enter_user_name">Enter user name</string>
