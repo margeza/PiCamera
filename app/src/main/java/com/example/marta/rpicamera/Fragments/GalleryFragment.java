@@ -2,6 +2,7 @@ package com.example.marta.rpicamera.Fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
@@ -31,8 +32,6 @@ public class GalleryFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_gallery, container, false);
 
         viewPager = (ViewPager) view.findViewById(R.id.view_pager);
-        viewPager.setCurrentItem(1);
-
         return view;
     }
 
@@ -47,7 +46,12 @@ public class GalleryFragment extends Fragment {
                 ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(viewPager.getAdapter().getPageTitle(position).toString().substring(0,7)
                         +"..." +"  (" +Integer.toString(position+1)
                         +"/"+Integer.toString(viewPager.getAdapter().getCount())  +")");
-                onGalleryScrolledListener.galleryScrolled(position);
+                if ((getResources().getConfiguration().screenLayout &
+                        Configuration.SCREENLAYOUT_SIZE_MASK) >=
+                        Configuration.SCREENLAYOUT_SIZE_LARGE) {
+                    onGalleryScrolledListener.galleryScrolled(position);
+
+                }
             }
 
             @Override

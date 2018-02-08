@@ -59,11 +59,14 @@ public class SavedItemsActivity extends AppCompatActivity implements SavedItemsF
 
     @Override
     public void galleryScrolled(int position) {
+        if(galleryFragment == null){
 
-        GalleryFragment galleryFragment = (GalleryFragment) getSupportFragmentManager().findFragmentById(R.id.gallery_fragment);
-        if(galleryFragment != null){
+        }else{
             savedItemsFragment.getAdapter().setActualPosition(position);
             savedItemsFragment.getAdapter().notifyDataSetChanged();
+            int duration = 500;  //miliseconds
+            int offset = 0;      //fromListTop
+            savedItemsFragment.getListView().smoothScrollToPositionFromTop(position,offset,duration);
         }
     }
 }

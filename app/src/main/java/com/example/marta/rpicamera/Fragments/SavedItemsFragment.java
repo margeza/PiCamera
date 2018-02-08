@@ -3,6 +3,7 @@ package com.example.marta.rpicamera.Fragments;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -74,6 +75,7 @@ public class SavedItemsFragment extends Fragment implements RPiServiceCallback, 
         if(savedItems!=null){
             savedItems.clear();
             savedItemsMini.clear();
+            listOfNames.clear();
         }
         updateSavedItemsList(files);
         adapter = new SavedItemsAdapter(getActivity(), savedItems, savedItemsMini);
@@ -142,4 +144,5 @@ public class SavedItemsFragment extends Fragment implements RPiServiceCallback, 
     public SavedItemsAdapter getAdapter(){
         return adapter;
     }
+    public ListView getListView(){return listView;}
 }

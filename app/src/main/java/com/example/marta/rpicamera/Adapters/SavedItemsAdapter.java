@@ -1,6 +1,7 @@
 package com.example.marta.rpicamera.Adapters;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,10 +52,14 @@ public class SavedItemsAdapter extends ArrayAdapter<SavedItem> {
                 .load("http://89.78.145.193:5000/get_image/"+savedItemsM.get(position).getItemName())
                 .into(iconView);
 
-        if (position == actualPosition) {
-            listItemView.setBackgroundColor(getContext().getResources().getColor(R.color.colorLightGrey));
-        } else {
-            listItemView.setBackgroundColor(getContext().getResources().getColor(R.color.colorItem));
+        if ((getContext().getResources().getConfiguration().screenLayout &
+                Configuration.SCREENLAYOUT_SIZE_MASK) >=
+                Configuration.SCREENLAYOUT_SIZE_LARGE) {
+            if (position == actualPosition) {
+                listItemView.setBackgroundColor(getContext().getResources().getColor(R.color.colorLightGrey));
+            } else {
+                listItemView.setBackgroundColor(getContext().getResources().getColor(R.color.colorItem));
+            }
         }
 
         return listItemView;
