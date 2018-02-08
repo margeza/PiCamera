@@ -8,13 +8,11 @@ public class SavedItem {
 
     private String mItemName;
     private String mItemDate;
-    private int mImageResourceId;
 
-    public SavedItem(String vName, String vDate, int imageResourceId)
+    public SavedItem(String vName, String vDate)
     {
         mItemName = vName;
         mItemDate = vDate;
-        mImageResourceId = imageResourceId;
     }
 
     public String getItemName() {
@@ -22,8 +20,5 @@ public class SavedItem {
     }
     public String getItemDate() {
         return mItemDate;
-    }
-    public int getImageResourceId() {
-        return mImageResourceId;
     }
 }

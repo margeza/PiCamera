@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">" PiCamera"</string>
+    <string name="action_settings">Ajustes</string>
+    <string name="action_exit">Salida</string>
+    <string name="action_about">Información</string>
+    <string name="settings_label_camera">Ajustes de la cámara</string>
+    <string name="camera_IP">Cámara IP</string>
+    <string name="about_content">Habrá algo sobre la aplicación</string>
+    <string name="about_label">Información sobre la aplicación</string>
+    <string name="user_name">Nombre de usuario</string>
+    <string name="password">Contraseña</string>
+    <string name="enter_ip">Introduzca en IP</string>
+    <string name="enter_password">Introduzca la contraseña</string>
+    <string name="enter_user_name">Introduzca nombre de usuario</string>
+    <string name="action_saved_items">Artículos guardados</string>
+</resources>

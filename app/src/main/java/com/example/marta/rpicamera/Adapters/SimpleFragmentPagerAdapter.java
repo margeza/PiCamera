@@ -29,42 +29,6 @@ import java.util.ArrayList;
 
 public class SimpleFragmentPagerAdapter extends PagerAdapter {
 
-//    final int PAGE_COUNT = 2;
-//    private String tabTitles[] = new String[] { "Camera", "Saved items"};
-//    private int[] imageResId = {
-//            R.drawable.ic_videocam_white_24dp,
-//            R.drawable.ic_playlist_play_white_24dp};
-//    Context context;
-//
-//    public SimpleFragmentPagerAdapter(FragmentManager fm, Context c) {
-//        super(fm);
-//        context = c;
-//    }
-//
-//    @Override
-//    public Fragment getItem(int position) {
-//        if (position == 0) {
-//            return new CameraFragment();
-//        } else {
-//            return new SavedItemsFragment();
-//        }
-//    }
-//
-//    @Override
-//    public int getCount() {
-//        return PAGE_COUNT;
-//    }
-//
-////    @Override
-////    public CharSequence getPageTitle(int position) {
-////        return tabTitles[position];
-////    }
-//
-//    @Override
-//    public CharSequence getPageTitle(int position) {
-//        return null;
-//    }
-
     Context context;
     private ArrayList<String> imagesNames = new ArrayList<String>();
 
@@ -93,7 +57,6 @@ public class SimpleFragmentPagerAdapter extends PagerAdapter {
         int padding = context.getResources().getDimensionPixelSize(R.dimen.padding_medium);
         imageView.setPadding(padding, padding, padding, padding);
         imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-//        imageView.setImageDrawable(context.getResources().getDrawable(R.drawable.ic_insert_photo_white_24dp));
         Picasso.with(context)
                 .load("http://89.78.145.193:5000/get_image/"+imagesNames.get(position))
                 .into(imageView);

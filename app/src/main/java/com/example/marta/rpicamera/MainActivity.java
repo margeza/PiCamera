@@ -7,7 +7,11 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
+import android.view.Display;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.webkit.HttpAuthHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -70,7 +74,7 @@ import static com.example.marta.rpicamera.Activities.SettingsActivity.PREFS_PASS
 import static com.example.marta.rpicamera.Activities.SettingsActivity.PREFS_USER;
 
 public class MainActivity extends AppCompatActivity implements MediaPlayer.OnPreparedListener,
-        SurfaceHolder.Callback {
+        SurfaceHolder.Callback, SwipeRefreshLayout.OnRefreshListener {
 
     private MediaPlayer _mediaPlayer;
     private SurfaceHolder _surfaceHolder;
@@ -82,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnPre
     String user;
     String password;
     WebView myWebView;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,8 +123,12 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnPre
                             int response = connection.getResponseCode();
                             Log.d("cam", "Response from server: " + response);
                             if (response == 200) {
-                                Snackbar.make(view, "Photo have been saved", Snackbar.LENGTH_LONG)
-                                        .setAction("Action", null).show();}
+                                Snackbar.make(view, "Photo has been saved", Snackbar.LENGTH_LONG)
+                                        .setAction("Action", null).show();
+                            }else {
+                                Snackbar.make(view, "Problem with connection. Photo has not been saved", Snackbar.LENGTH_LONG)
+                                        .setAction("Action", null).show();
+                            }
 
                         }catch (Exception e) {
                             Snackbar.make(view, e.toString(), Snackbar.LENGTH_LONG)
@@ -149,29 +158,52 @@ public class MainActivity extends AppCompatActivity implements MediaPlayer.OnPre
 //        int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 240, r.getDisplayMetrics());
 //        _surfaceHolder.setFixedSize(width, height);
         myWebView = (WebView) findViewById(R.id.webview);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh_layout);
+//        myWebView.setLayoutParams(new ViewGroup.LayoutParams(width, height));
+        //myWebView.setInitialScale(30);
+        myWebView.getSettings().setLoadWithOverviewMode(true);
+        myWebView.getSettings().setUseWideViewPort(true);
         loadWebView();
+        swipeRefreshLayout.setOnRefreshListener(this::loadWebView);
+        swipeRefreshLayout.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        swipeRefreshLayout.setRefreshing(true);
+
+                                        loadWebView();
+                                    }
+                                }
+        );
+
     }
 
-private void loadWebView(){
-    myWebView.setWebViewClient(new WebViewClient(){
-        @Override
-        public void onReceivedHttpAuthRequest(WebView view,
-                                              HttpAuthHandler handler, String host, String realm) {
-            SharedPreferences sharedPreferences = getSharedPreferences(PREFS, 0);
-            user = sharedPreferences.getString(PREFS_USER, null);
-            password = sharedPreferences.getString(PREFS_PASSWORD, null);
-            if (user == null) {user = getResources().getString(R.string.user_name_txt);}
-            if (password == null) {password = getResources().getString(R.string.password_txt);}
-            handler.proceed(user, password);
+    private void loadWebView(){
+        swipeRefreshLayout.setRefreshing(true);
+        myWebView.setWebViewClient(new WebViewClient(){
+            @Override
+            public void onReceivedHttpAuthRequest(WebView view,
+                                                  HttpAuthHandler handler, String host, String realm) {
+                SharedPreferences sharedPreferences = getSharedPreferences(PREFS, 0);
+                user = sharedPreferences.getString(PREFS_USER, null);
+                password = sharedPreferences.getString(PREFS_PASSWORD, null);
+                if (user == null) {user = getResources().getString(R.string.user_name_txt);}
+                if (password == null) {password = getResources().getString(R.string.password_txt);}
+                handler.proceed(user, password);
 
-        }
-    });
+            }
+        });
 
-    SharedPreferences sharedPreferences = getSharedPreferences(PREFS, 0);
-    cameraID = sharedPreferences.getString(PREFS_IP, null);
-    if (cameraID == null) {cameraID = getResources().getString(R.string.camera_URL);}
-    myWebView.loadUrl(cameraID);
-}
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS, 0);
+        cameraID = sharedPreferences.getString(PREFS_IP, null);
+        if (cameraID == null) {cameraID = getResources().getString(R.string.camera_URL);}
+        myWebView.loadUrl(cameraID);
+        swipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void onRefresh() {
+        loadWebView();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

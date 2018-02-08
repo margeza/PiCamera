@@ -7,9 +7,11 @@
     android:background="@color/colorItem"
     tools:context="com.example.marta.rpicamera.Activities.SavedItemsActivity">
 
-    <ListView
-        android:id="@+id/listview_saved_items"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+    <fragment
+        android:id="@+id/saved_items_fragment"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        class="com.example.marta.rpicamera.Fragments.SavedItemsFragment"></fragment>
 
 </LinearLayout>

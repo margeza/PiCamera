@@ -12,6 +12,8 @@ import android.widget.Toast;
 import com.example.marta.rpicamera.Adapters.SavedItemsAdapter;
 import com.example.marta.rpicamera.Data.Files;
 import com.example.marta.rpicamera.Data.Results;
+import com.example.marta.rpicamera.Fragments.GalleryFragment;
+import com.example.marta.rpicamera.Fragments.SavedItemsFragment;
 import com.example.marta.rpicamera.MainActivity;
 import com.example.marta.rpicamera.Models.SavedItem;
 import com.example.marta.rpicamera.R;
@@ -19,63 +21,49 @@ import com.example.marta.rpicamera.service.RPiService;
 import com.example.marta.rpicamera.service.RPiServiceCallback;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
-public class SavedItemsActivity extends AppCompatActivity implements RPiServiceCallback {
+public class SavedItemsActivity extends AppCompatActivity implements SavedItemsFragment.OnSavedItemClickListener, GalleryFragment.OnGalleryScrolledListener {
 
-    Files files;
-    ArrayList<SavedItem> savedItems;
-    ArrayList<String> listOfNames;
-    ListView listView;
-    SavedItemsAdapter adapter;
-    private RPiService service;
+
+    GalleryFragment galleryFragment;
+    SavedItemsFragment savedItemsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_saved_items);
-        savedItems = new ArrayList<SavedItem>();
-        listOfNames = new ArrayList<String>();
-        listView = (ListView) findViewById(R.id.listview_saved_items);
-        service = new RPiService(this);
-        service.refreshData();
+
+        galleryFragment = (GalleryFragment) getSupportFragmentManager().findFragmentById(R.id.gallery_fragment);
+        savedItemsFragment = (SavedItemsFragment) getSupportFragmentManager().findFragmentById(R.id.saved_items_fragment);
+//        if(galleryFragment != null){
+//            galleryFragment.getViewPager().setCurrentItem(0);
+//        }
     }
 
     @Override
-    public void serviceSuccess(Results results) {
-        files = results.getFiles();
-        updateSavedItemsList(files);
-        setListOfNames(files);
-        adapter = new SavedItemsAdapter(this, savedItems);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                int position = i;
-                Intent intent = new Intent(SavedItemsActivity.this,GalleryActivity.class);
-                intent.putExtra("position",position);
-                intent.putExtra("savedItems", listOfNames);
-                SavedItemsActivity.this.startActivity(intent);
-            }
-        });
+    public void savedItemSelected(ArrayList<String> listOfNames, int position) {
+
+        if(galleryFragment == null){
+            Intent intent = new Intent(SavedItemsActivity.this,GalleryActivity.class);
+            intent.putExtra("position",position);
+            intent.putExtra("savedItems", listOfNames);
+            SavedItemsActivity.this.startActivity(intent);
+
+        }else {
+            galleryFragment.updateView(listOfNames,position);
+        }
+
     }
 
     @Override
-    public void serviceFailure(Exception exception) {
-        Toast.makeText(this, exception.getMessage(), Toast.LENGTH_LONG);
-    }
+    public void galleryScrolled(int position) {
 
-    private void updateSavedItemsList(Files files){
-        for(int i = 0; i < files.getDataLenght(); i++){
-            savedItems.add(new SavedItem(files.getName(i), files.getDate(i), R.drawable.ic_insert_photo_white_24dp));
+        GalleryFragment galleryFragment = (GalleryFragment) getSupportFragmentManager().findFragmentById(R.id.gallery_fragment);
+        if(galleryFragment != null){
+            savedItemsFragment.getAdapter().setActualPosition(position);
+            savedItemsFragment.getAdapter().notifyDataSetChanged();
         }
-    }
-
-    private void setListOfNames(Files files){
-        for(int i = 0; i < files.getDataLenght(); i++){
-            listOfNames.add(files.getName(i));
-        }
-//        listOfNames.add("0.jpg");
-//        listOfNames.add("1.jpg");
-//        listOfNames.add("2.jpg");
     }
 }
