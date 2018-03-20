@@ -37,9 +37,6 @@ public class SavedItemsActivity extends AppCompatActivity implements SavedItemsF
 
         galleryFragment = (GalleryFragment) getSupportFragmentManager().findFragmentById(R.id.gallery_fragment);
         savedItemsFragment = (SavedItemsFragment) getSupportFragmentManager().findFragmentById(R.id.saved_items_fragment);
-//        if(galleryFragment != null){
-//            galleryFragment.getViewPager().setCurrentItem(0);
-//        }
     }
 
     @Override
@@ -54,7 +51,6 @@ public class SavedItemsActivity extends AppCompatActivity implements SavedItemsF
         }else {
             galleryFragment.updateView(listOfNames,position);
         }
-
     }
 
     @Override

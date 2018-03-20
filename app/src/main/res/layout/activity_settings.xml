@@ -42,7 +42,7 @@
             android:layout_marginRight="@dimen/fab_margin"
             android:layout_marginBottom="8dp"
             android:textColor="@color/colorItem"
-            android:text="@string/camera_URL"/>
+            android:text="@string/camera_ip_adres"/>
     </LinearLayout>
 
     <LinearLayout

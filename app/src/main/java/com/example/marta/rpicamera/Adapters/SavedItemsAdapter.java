@@ -1,7 +1,9 @@
 package com.example.marta.rpicamera.Adapters;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,9 @@ import com.example.marta.rpicamera.Models.SavedItem;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+
+import static com.example.marta.rpicamera.Activities.SettingsActivity.PREFS;
+import static com.example.marta.rpicamera.Activities.SettingsActivity.PREFS_IP;
 
 /**
  * Created by Marta on 2018-01-02.
@@ -48,8 +53,11 @@ public class SavedItemsAdapter extends ArrayAdapter<SavedItem> {
         dateTextView.setText(currentSavedItem.getItemDate());
 
         ImageView iconView = (ImageView) listItemView.findViewById(R.id.list_item_icon);
+        Resources res = getContext().getResources();
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences(PREFS, 0);
+        String cam_ip = sharedPreferences.getString(PREFS_IP, null);
         Picasso.with(getContext())
-                .load("http://89.78.145.193:5000/get_image/"+savedItemsM.get(position).getItemName())
+                .load(String.format(res.getString(R.string.get_image), cam_ip)+savedItemsM.get(position).getItemName())
                 .into(iconView);
 
         if ((getContext().getResources().getConfiguration().screenLayout &

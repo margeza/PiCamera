@@ -1,27 +1,22 @@
 package com.example.marta.rpicamera.Adapters;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ImageSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.example.marta.rpicamera.Fragments.CameraFragment;
-import com.example.marta.rpicamera.Fragments.SavedItemsFragment;
-import com.example.marta.rpicamera.Models.SavedItem;
 import com.example.marta.rpicamera.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+
+import static com.example.marta.rpicamera.Activities.SettingsActivity.PREFS;
+import static com.example.marta.rpicamera.Activities.SettingsActivity.PREFS_IP;
 
 /**
  * Created by Marta on 2018-01-02.
@@ -57,8 +52,11 @@ public class SimpleFragmentPagerAdapter extends PagerAdapter {
         int padding = context.getResources().getDimensionPixelSize(R.dimen.padding_medium);
         imageView.setPadding(padding, padding, padding, padding);
         imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        Resources res = context.getResources();
+        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFS, 0);
+        String cam_ip = sharedPreferences.getString(PREFS_IP, null);
         Picasso.with(context)
-                .load("http://89.78.145.193:5000/get_image/"+imagesNames.get(position))
+                .load(String.format(res.getString(R.string.get_image), cam_ip)+imagesNames.get(position))
                 .into(imageView);
         ((ViewPager) container).addView(imageView, 0);
         return imageView;

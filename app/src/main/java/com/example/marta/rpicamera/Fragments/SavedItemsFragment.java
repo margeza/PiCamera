@@ -53,7 +53,7 @@ public class SavedItemsFragment extends Fragment implements RPiServiceCallback, 
         listOfNames = new ArrayList<String>();
         listView = (ListView) view.findViewById(R.id.listview_saved_items);
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
-        service = new RPiService(this);
+        service = new RPiService(this, getContext());
         service.refreshData();
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
         swipeRefreshLayout.post(new Runnable() {

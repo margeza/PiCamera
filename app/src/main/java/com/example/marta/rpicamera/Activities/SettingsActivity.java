@@ -136,7 +136,7 @@ public class SettingsActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences(PREFS, 0);
 
         String cameraID = sharedPreferences.getString(PREFS_IP, null);
-        if (cameraID == null) camera_id_txt.setText(R.string.camera_URL);
+        if (cameraID == null) camera_id_txt.setText(R.string.camera_ip_adres);
         else camera_id_txt.setText(cameraID);
 
         String username = sharedPreferences.getString(PREFS_USER, null);

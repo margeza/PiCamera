@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">" PiCamera"</string>
+    <string name="app_name">PiCamera</string>
     <string name="action_settings">Ajustes</string>
     <string name="action_exit">Salida</string>
     <string name="action_about">Información</string>
@@ -14,4 +14,6 @@
     <string name="enter_password">Introduzca la contraseña</string>
     <string name="enter_user_name">Introduzca nombre de usuario</string>
     <string name="action_saved_items">Artículos guardados</string>
+    <string name="saved_photo">La foto ha sido salvada</string>
+    <string name="not_saved_photo">Problema con la conexión. La foto no se ha guardado.</string>
 </resources>
