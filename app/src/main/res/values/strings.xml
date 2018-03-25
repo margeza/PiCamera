@@ -15,12 +15,17 @@
     <string name="password">Password</string>
     <string name="cam_url" translatable="false">http://%1$s/html/cam_pic_new.php?time=1517771864407&amp;pDelay=40000</string>
     <string name="photo_url" translatable="false">http://%1$s:5000/save_screenshot</string>
+    <string name="motion_url" translatable="false">http://%1$s:5000/motion_detection/</string>
     <string name="get_info_url" translatable="false">http://%1$s:5000/get_info</string>
     <string name="get_image" translatable="false">http://%1$s:5000/get_image/</string>
+    <string name="get_video" translatable="false">http://%1$s/html/media/</string>
+    <string name="motion_status" translatable="false">http://%1$s/html/status_mjpeg.php?last=</string>
     <string name="enter_ip">Enter IP</string>
     <string name="enter_password">Enter password</string>
     <string name="enter_user_name">Enter user name</string>
     <string name="action_saved_items">Saved items</string>
     <string name="saved_photo">Photo has been saved</string>
-    <string name="not_saved_photo">Problem with connection. Photo has not been saved.</string>
+    <string name="motion_start">Motion detection has been started</string>
+    <string name="motion_stop">Motion detection has been stopped</string>
+    <string name="not_saved_photo">Problem with connection.</string>
 </resources>

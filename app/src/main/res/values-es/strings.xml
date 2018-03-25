@@ -15,5 +15,7 @@
     <string name="enter_user_name">Introduzca nombre de usuario</string>
     <string name="action_saved_items">Artículos guardados</string>
     <string name="saved_photo">La foto ha sido salvada</string>
-    <string name="not_saved_photo">Problema con la conexión. La foto no se ha guardado.</string>
+    <string name="not_saved_photo">Problema con la conexión</string>
+    <string name="motion_start">La detección de movimiento se ha iniciado</string>
+    <string name="motion_stop">La detección de movimiento se ha detenido</string>
 </resources>

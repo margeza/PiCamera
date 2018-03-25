@@ -15,5 +15,7 @@
     <string name="enter_user_name">Wprowadź nazwę użytkownika</string>
     <string name="action_saved_items">Zapisane obiekty</string>
     <string name="saved_photo">Zdjęcie zostało zapisane</string>
-    <string name="not_saved_photo">Problem z nawiązaniem połączenia, zdjęcie nie zostało zapisane.</string>
+    <string name="not_saved_photo">Problem z nawiązaniem połączenia</string>
+    <string name="motion_start">Wykrywanie ruchu zostało włączone</string>
+    <string name="motion_stop">Wykrywanie ruchu zostało zatrzymane</string>
 </resources>

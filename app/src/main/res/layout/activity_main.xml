@@ -33,4 +33,26 @@
         app:fabSize="normal"
         app:srcCompat="@drawable/ic_photo_camera_white_36dp"/>
 
+    <View
+        android:id="@+id/gap"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        app:layout_anchor="@id/fab"
+        android:layout_gravity="bottom"
+        app:layout_anchorGravity="center_vertical">
+
+    </View>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/motion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:layout_anchor="@id/gap"
+        app:layout_anchorGravity="top"
+        app:backgroundTint="@color/colorPrimary"
+        android:layout_margin="@dimen/fab_margin"
+        app:fabSize="normal"
+        app:srcCompat="@drawable/ic_video_library_white_24dp"/>
+
 </android.support.design.widget.CoordinatorLayout>

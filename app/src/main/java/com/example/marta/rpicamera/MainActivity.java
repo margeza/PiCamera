@@ -1,59 +1,28 @@
 package com.example.marta.rpicamera;
 
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnPreparedListener;
-import android.net.Uri;
+import android.content.res.ColorStateList;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
-import android.view.Display;
-import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.webkit.HttpAuthHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.MediaController;
-import android.widget.VideoView;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.graphics.PixelFormat;
-import android.graphics.PorterDuff;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Base64;
-import android.util.TypedValue;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.MediaController;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.VideoView;
 
 import com.example.marta.rpicamera.Activities.AboutActivity;
 import com.example.marta.rpicamera.Activities.SavedItemsActivity;
 import com.example.marta.rpicamera.Activities.SettingsActivity;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -62,10 +31,6 @@ import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
-import java.net.URLConnection;
-import java.util.HashMap;
-import java.util.Map;
-
 
 
 import static com.example.marta.rpicamera.Activities.SettingsActivity.PREFS;
@@ -75,21 +40,36 @@ import static com.example.marta.rpicamera.Activities.SettingsActivity.PREFS_USER
 
 public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
+    public static final String PREFS_MOTION = "motionStatus";
+    private static int START = 1;
+    private static int STOP = 0;
     FloatingActionButton fab;
+    FloatingActionButton motion;
     Intent myIntent;
-    String cameraID;
+    String cameraIP;
     String user;
     String password;
     WebView myWebView;
     private SwipeRefreshLayout swipeRefreshLayout;
+    int motion_status;
+    Exception error;
+    SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceChangeListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sharedPreferenceChangeListener = (sharedPreferences, key) -> {
+            if (key.equals(PREFS_IP)){
+                cameraIP = sharedPreferences.getString(PREFS_IP, getString(R.string.camera_IP));
+            } else if (key.equals(PREFS_USER)) {
+                user = sharedPreferences.getString(PREFS_USER, getString(R.string.user_name_txt));
+            } else if (key.equals(PREFS_PASSWORD)){
+                password = sharedPreferences.getString(PREFS_PASSWORD, getString(R.string.password_txt));
+            }
+        };
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,20 +80,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                     protected String doInBackground(String... strings) {
 
                         Resources res = getResources();
-                        SharedPreferences sharedPreferences = getSharedPreferences(PREFS, 0);
-                        String cam_ip = sharedPreferences.getString(PREFS_IP, null);
-                        if (cam_ip == null) {cam_ip = getResources().getString(R.string.camera_ip_adres);}
-                        String endpoint = String.format(res.getString(R.string.photo_url), cam_ip);
-                        Authenticator.setDefault (new Authenticator() {
-                            protected PasswordAuthentication getPasswordAuthentication() {
-                                SharedPreferences sharedPreferences = getSharedPreferences(PREFS, 0);
-                                user = sharedPreferences.getString(PREFS_USER, null);
-                                password = sharedPreferences.getString(PREFS_PASSWORD, null);
-                                if (user == null) {user = getResources().getString(R.string.user_name_txt);}
-                                if (password == null) {password = getResources().getString(R.string.password_txt);}
-                                return new PasswordAuthentication (user, password.toCharArray());
-                            }
-                        });
+                        String endpoint = String.format(res.getString(R.string.photo_url), cameraIP);
+                        setAuthentication();
 
                         try {
                             URL url = new URL(endpoint);
@@ -139,6 +107,14 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             }
         });
 
+        motion = (FloatingActionButton) findViewById(R.id.motion);
+        motion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                motion(view);
+            }
+        });
+
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setLogo(R.drawable.ic_raspberry_pi);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
@@ -147,46 +123,194 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         myWebView = (WebView) findViewById(R.id.webview);
         myWebView.getSettings().setLoadWithOverviewMode(true);
         myWebView.getSettings().setUseWideViewPort(true);
+        initValuesFromSharedPreferences();
         loadWebView();
         swipeRefreshLayout.setOnRefreshListener(this::onRefresh);
         swipeRefreshLayout.post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        swipeRefreshLayout.setRefreshing(true);
 
-                                        loadWebView();
                                     }
                                 }
         );
 
+        FirebaseMessaging.getInstance().subscribeToTopic("motion");
+        if (getIntent().getExtras() != null) {
+            for (String key : getIntent().getExtras().keySet()) {
+                Object value = getIntent().getExtras().get(key);
+                Log.d("NOTIFICATION", "Key: " + key + " Value: " + value);
+                if(value.equals("/topics/motion")){
+                    Log.d("NOTIFICATION", "Inside!");
+                    motion(motion);
+                }else {currentMotionStatus();}
+            }
+        }else {currentMotionStatus();}
+    }
+
+    private void motion(View view){
+        new AsyncTask<String, Void, Integer>() {
+            @Override
+            protected Integer doInBackground(String... strings) {
+                Resources res = getResources();
+                String endpoint;
+                updateMotionDetectionState();
+                int newMotionStatus = getOppositeMotionStatus();
+                endpoint = String.format(res.getString(R.string.motion_url), cameraIP)+ Integer.toString(newMotionStatus);
+                setAuthentication();
+                try {
+                    URL url = new URL(endpoint);
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.connect();
+                    int response = connection.getResponseCode();
+                    Log.d("cam", "Response from server: " + response);
+                    if (response == 200) {
+                        if(newMotionStatus == START){
+                            Snackbar.make(view, getResources().getString(R.string.motion_start), Snackbar.LENGTH_LONG)
+                                    .setAction("Action", null).show();
+                        }else {
+                            Snackbar.make(view, getResources().getString(R.string.motion_stop), Snackbar.LENGTH_LONG)
+                                    .setAction("Action", null).show();
+                        }
+                        return newMotionStatus;
+                    }else {
+                        Snackbar.make(view, getResources().getString(R.string.not_saved_photo), Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show();
+                    }
+
+                }catch (Exception e) {
+                    Snackbar.make(view, e.toString(), Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+                return -1;
+            }
+
+            @Override
+            protected void onPostExecute(Integer newMotionStatus) {
+                super.onPostExecute(newMotionStatus);
+                motion_status = newMotionStatus;
+                setColorOfFloatingButton(newMotionStatus);
+
+            }
+        }.execute();
+    }
+
+    private void initValuesFromSharedPreferences() {
+        SharedPreferences preferences = getSharedPreferences(PREFS, 0);
+        cameraIP = preferences.getString(PREFS_IP, getString(R.string.camera_ip_adres));
+        user = preferences.getString(PREFS_USER, getString(R.string.user_name_txt));
+        password = preferences.getString(PREFS_PASSWORD, getString(R.string.password_txt));
+    }
+
+    private void setAuthentication(){
+        Authenticator.setDefault (new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication (user, password.toCharArray());
+            }
+        });
+    }
+    private void currentMotionStatus(){
+        new AsyncTask<String, Void, String>() {
+            @Override
+            protected String doInBackground(String... strings) {
+                return updateMotionDetectionState();
+            }
+            @Override
+            protected void onPostExecute(String s) {
+                setColorOfFloatingButton(motion_status);
+            }
+        }.execute();
+    }
+
+    private String updateMotionDetectionState(){
+        Resources res = getResources();
+        String endpoint;
+        endpoint = String.format(res.getString(R.string.motion_status), cameraIP);
+        setAuthentication();
+
+        try {
+            URL url = new URL(endpoint);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.connect();
+            InputStream inputStream = connection.getInputStream();
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            StringBuilder result = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null){
+                result.append(line);
+            }
+            Log.d(PREFS_MOTION, "Response from server: " + result.toString());
+            if (result.toString().equals("ready")) {
+                motion_status = STOP;
+            }else {
+                motion_status = START;
+            }
+            return result.toString();
+
+        }catch (Exception e) {
+            Log.e(PREFS_MOTION, e.toString());
+            error = e;
+        }
+        return null;
+    }
+
+    public void setColorOfFloatingButton(int a){
+        if(a == START){
+            motion.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorRed)));}
+        else {
+            motion.setBackgroundTintList(ColorStateList.valueOf(getResources().getColor(R.color.colorPrimary)));}
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getSharedPreferences(PREFS, 0).registerOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
+        currentMotionStatus();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        getSharedPreferences(PREFS, 0).unregisterOnSharedPreferenceChangeListener(sharedPreferenceChangeListener);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        currentMotionStatus();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        currentMotionStatus();
+    }
+
+    private int getOppositeMotionStatus(){
+        if(motion_status == STOP){
+            return START;}
+        else {
+            return STOP;}
     }
 
     private void loadWebView(){
-        swipeRefreshLayout.setRefreshing(true);
         myWebView.setWebViewClient(new WebViewClient(){
             @Override
             public void onReceivedHttpAuthRequest(WebView view,
                                                   HttpAuthHandler handler, String host, String realm) {
-                SharedPreferences sharedPreferences = getSharedPreferences(PREFS, 0);
-                user = sharedPreferences.getString(PREFS_USER, null);
-                password = sharedPreferences.getString(PREFS_PASSWORD, null);
-                if (user == null) {user = getResources().getString(R.string.user_name_txt);}
-                if (password == null) {password = getResources().getString(R.string.password_txt);}
                 handler.proceed(user, password);
 
             }
         });
-
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFS, 0);
-        cameraID = sharedPreferences.getString(PREFS_IP, null);
-        if (cameraID == null) {cameraID = getResources().getString(R.string.camera_ip_adres);}
-        myWebView.loadUrl(String.format(getResources().getString(R.string.cam_url), cameraID));
-        swipeRefreshLayout.setRefreshing(false);
+        myWebView.loadUrl(String.format(getResources().getString(R.string.cam_url), cameraIP));
     }
 
     @Override
     public void onRefresh() {
+        swipeRefreshLayout.setRefreshing(true);
         loadWebView();
+        currentMotionStatus();
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
